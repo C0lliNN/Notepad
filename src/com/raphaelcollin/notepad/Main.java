@@ -34,7 +34,7 @@ public class Main extends Application {
 
             // Colocando Icone
 
-        primaryStage.getIcons().add(new Image(new FileInputStream("icone.png")));
+        primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("arquivos/icone.png")));
 
             /* Configurando quando o usuário tenta sair do programa
              * Se o conteudo estiver vazio ou estiver salvo, vamos sair imediatamente mas,

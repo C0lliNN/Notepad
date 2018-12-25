@@ -27,6 +27,10 @@ import javafx.stage.Stage;
 import java.awt.*;
 import java.io.*;
 import java.net.URL;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -130,7 +134,7 @@ public class Controller {
           * nós vamos ler esses dados e instanciar um novo objeto para o atributon fonteAutal
           * */
 
-        try (BufferedReader reader = new BufferedReader(new FileReader("config.txt"))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(getClass().getResource("../arquivos/config.txt").getFile()))) {
             String input = reader.readLine();
             if (input != null && !input.trim().isEmpty()) {
                 File file = new File(input);
@@ -488,7 +492,7 @@ public class Controller {
         stage.setTitle("Localizar");
         stage.setScene(new Scene(gridPane, 400, 120));
         stage.initOwner(borderPane.getScene().getWindow());
-        stage.getIcons().add(new Image(new FileInputStream("icone.png")));
+        stage.getIcons().add(new Image(getClass().getResourceAsStream("../arquivos/icone.png")));
         stage.setResizable(false);
         stage.show();
 
@@ -710,7 +714,7 @@ public class Controller {
         stage.setTitle("Substituir");
         stage.setResizable(false);
         stage.initOwner(borderPane.getScene().getWindow());
-        stage.getIcons().add(new Image(new FileInputStream("icone.png")));
+        stage.getIcons().add(new Image(getClass().getResourceAsStream("../arquivos/icone.png")));
         stage.show();
 
     }
@@ -872,7 +876,7 @@ public class Controller {
         * */
 
     public void salvarConfiguracao() throws Exception {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("config.txt"))) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(getClass().getResource("../arquivos/config.txt").getFile()))) {
             if(parentFile != null){
                 writer.write(parentFile.toString());
             } else{

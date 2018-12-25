@@ -33,7 +33,7 @@ public class FonteController {
 
     public void initialize(){
         ObservableList<Label> nameList = FXCollections.observableArrayList();
-        try (BufferedReader reader = new BufferedReader(new FileReader("fontes.txt"))){
+        try (BufferedReader reader = new BufferedReader(new FileReader(getClass().getResource("../arquivos/fontes.txt").getFile()))){
             String input;
             while ((input = reader.readLine()) != null){
                 Label label = new Label(input);
