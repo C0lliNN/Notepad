@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<DialogPane style="-fx-background-color: #f7f7f7" prefHeight="100.0" prefWidth="400.0">
+        <content>
+            <GridPane alignment="CENTER" vgap="10" hgap="10">
+                <Label textFill="#0068a0" GridPane.rowIndex="0" text="Deseja salvar as alterações?">
+                    <font>
+                        <Font name="Verdana" size="20"/>
+                    </font>
+                </Label>
+            </GridPane>
+        </content>
+
+        <ButtonType text="Salvar" buttonData="YES"/>
+        <ButtonType text="Não Salvar" buttonData="NO"/>
+        <ButtonType text="Cancelar" buttonData="NO"/>
+
+</DialogPane>

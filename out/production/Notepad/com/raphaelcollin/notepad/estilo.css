@@ -1,0 +1,46 @@
+
+    /* Formatação da Barra de Menus*/
+
+#menuBar{
+    -fx-background-color: white;
+    -fx-border-width: 0px 0px 1px 0px;
+    -fx-border-color: #c9cdd3;
+}
+
+    /* Formatação to TextArea Principal*/
+
+.text-area {
+    -fx-background-insets: 0;
+    -fx-background-color: transparent, white, transparent, white;
+    -fx-highlight-fill: rgb(0,150,201);
+    -fx-highlight-text-fill: white;
+}
+
+.text-area .content {
+    -fx-background-color: transparent, white, transparent, white;
+}
+
+.text-area:focused .content {
+    -fx-background-color: transparent, white, transparent, white;
+}
+
+    /* Formatação da Barra de Status*/
+
+.hbox{
+    -fx-background-color: #E7E7E7;
+    -fx-border-width: 1px 0px 0px 0px;
+    -fx-border-color: #D9D9D9;
+}
+
+    /* Formtação das ListView da Janela Fonte*/
+
+.list-cell:filled:selected {
+    -fx-background-color: rgb(0,150,201);
+    -fx-text-fill: white;
+
+}
+
+.list-cell:filled:selected .label{
+    -fx-text-fill: white;
+}
+

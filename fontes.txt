@@ -1,0 +1,92 @@
+Agency FB
+Algerian
+Arial
+Arial Rounded MT Bold
+Bahnschrift
+Baskerville Old Face
+Bauhaus 93
+Bell MT
+Berlin Sans FB
+Bernard MT Condensed
+Blackadder ITC
+Bodoni MT
+Bodoni MT Poster Compressed
+Book Antiqua
+Bookman Old Style
+Bookshelf Symbol 7
+Bradley Hand ITC
+Britannic,Bold
+Broadway
+Calibri
+Californian FB
+Calisto MT
+Cambria
+Cambria Math
+Candara
+Castellar
+Centaur
+Century
+Century Gothic
+Century Schoolbook
+Chiller
+Colonna MT
+Comic Sans MS
+Consolas
+Constantia
+Cooper Black
+Copperplate Gothic Bold
+Corbel
+Courier
+Courier New
+Curlz MT
+Ebrima
+Edwardian Script ITC
+Elephant
+Engravers MT
+Eras ITC
+Felix Titling
+Forte
+Franklin Gothic
+Franklin Gothic Book
+Freestyle Script
+Gadugi
+Garamond
+Georgia
+Gigi
+Gill Sans Ultra Bold Condensed
+Gill Sans MT
+Goudy Old Style
+Goudy Stout
+Haettenschweiler
+Harlow Solid Italic
+Harrington
+High Tower Text
+HoloLens MDL2 Assets
+Impact
+Imprint MT Shadow
+Leelawadee UI
+Lucida Calligraphy
+Lucida Fax Italic
+Lucida Handwriting Italic
+Lucida Sans
+Lucida Sans Typewriter
+Lucida Sans Unicode
+Ravie
+Rockwell
+Roman
+Script
+Segoe MDL2 Assets
+Small Fonts
+Snap ITC
+Stencil
+Sylfaen
+System
+Tahoma
+Times New Roman
+Unispace
+Verdana
+Vladimir Script
+Wingdings
+Wingdings 2
+Yu Gothic
+Yu Gothic UI
