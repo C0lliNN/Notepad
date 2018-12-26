@@ -28,9 +28,6 @@ import java.awt.*;
 import java.io.*;
 import java.net.URL;
 import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -438,7 +435,8 @@ public class Controller {
 
         textArea.selectRange(0,0);
 
-        GridPane gridPane = FXMLLoader.load(getClass().getResource("../view/janela_localizar.fxml"));
+        GridPane gridPane = FXMLLoader.load(getClass().getResource(".." + File.separator + "view" + File.separator +
+                "janela_localizar.fxml"));
         gridPane.setStyle("-fx-background-color: #F7F7F7");
 
         TextField textField = (TextField) gridPane.getChildren().get(1);
@@ -492,7 +490,8 @@ public class Controller {
         stage.setTitle("Localizar");
         stage.setScene(new Scene(gridPane, 400, 120));
         stage.initOwner(borderPane.getScene().getWindow());
-        stage.getIcons().add(new Image(getClass().getResourceAsStream("../arquivos/icone.png")));
+        stage.getIcons().add(new Image(getClass().getResourceAsStream(".." + File.separator + "arquivos" + File.separator +
+                "icone.png")));
         stage.setResizable(false);
         stage.show();
 
@@ -536,7 +535,8 @@ public class Controller {
 
         textArea.selectRange(0,0);
 
-        GridPane gridPane = FXMLLoader.load(getClass().getResource("../view/janela_substituir.fxml"));
+        GridPane gridPane = FXMLLoader.load(getClass().getResource(".." + File.separator + "view" + File.separator +
+                "janela_substituir.fxml"));
         gridPane.setStyle("-fx-background-color: #F7F7F7");
 
         VBox vBox1 = (VBox) gridPane.getChildren().get(0);
@@ -714,7 +714,8 @@ public class Controller {
         stage.setTitle("Substituir");
         stage.setResizable(false);
         stage.initOwner(borderPane.getScene().getWindow());
-        stage.getIcons().add(new Image(getClass().getResourceAsStream("../arquivos/icone.png")));
+        stage.getIcons().add(new Image(getClass().getResourceAsStream(".." + File.separator + "arquivos" + File.separator +
+                "icone.png")));
         stage.show();
 
     }
@@ -724,7 +725,8 @@ public class Controller {
 
     @FXML
     public void handleIrPara() throws Exception {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../view/janela_irpara.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(".." + File.separator +  "view" + File.separator +
+                "janela_irpara.fxml"));
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setDialogPane(fxmlLoader.load());
         dialog.setTitle("Ir para");
@@ -786,8 +788,10 @@ public class Controller {
     @FXML
     public void handleFonte() throws Exception{
         Dialog<ButtonType> dialog = new Dialog<>();
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../view/janela_fonte.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(".." + File.separator + "view" + File.separator +
+                "janela_fonte.fxml"));
         dialog.setDialogPane(fxmlLoader.load());
+        dialog.getDialogPane().getStylesheets().add(getClass().getResource(".." + File.separator + "estilo.css").toExternalForm());
         dialog.setTitle("Fonte");
         dialog.initOwner(borderPane.getScene().getWindow());
 
@@ -912,7 +916,8 @@ public class Controller {
 
     public int exibirConfirmacaoSaida() throws Exception {
         Dialog<ButtonType> dialog = new Dialog<>();
-        dialog.setDialogPane(FXMLLoader.load(getClass().getResource("../view/janela_saida.fxml")));
+        dialog.setDialogPane(FXMLLoader.load(getClass().getResource(".." + File.separator +"view"  + File.separator +
+                "janela_saida.fxml")));
         dialog.setTitle("Bloco de Notas");
         dialog.initOwner(borderPane.getScene().getWindow());
         Optional<ButtonType> result = dialog.showAndWait();

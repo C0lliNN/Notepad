@@ -8,14 +8,14 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-
 import java.awt.*;
-import java.io.FileInputStream;
+import java.io.File;
+
 
 
 public class Main extends Application {
 
-    private FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("view/janela_principal.fxml"));
+    private FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("view" + File.separator + "janela_principal.fxml"));
     private Controller controller;
 
     @Override
@@ -32,9 +32,13 @@ public class Main extends Application {
         double height = screenSize.height * 0.7;
         primaryStage.setScene(new Scene(root, width, height));
 
+            // CSS
+
+        root.getStylesheets().add(getClass().getResource("estilo.css").toExternalForm());
+
             // Colocando Icone
 
-        primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("arquivos/icone.png")));
+        primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("arquivos" + File.separator + "icone.png")));
 
             /* Configurando quando o usuário tenta sair do programa
              * Se o conteudo estiver vazio ou estiver salvo, vamos sair imediatamente mas,

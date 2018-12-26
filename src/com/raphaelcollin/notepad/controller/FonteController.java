@@ -6,8 +6,10 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.text.Font;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.FileSystems;
 
 public class FonteController {
 
@@ -33,7 +35,8 @@ public class FonteController {
 
     public void initialize(){
         ObservableList<Label> nameList = FXCollections.observableArrayList();
-        try (BufferedReader reader = new BufferedReader(new FileReader(getClass().getResource("../arquivos/fontes.txt").getFile()))){
+        try (BufferedReader reader = new BufferedReader(new FileReader(getClass().getResource
+                ("../arquivos/fontes.txt").getFile()))){
             String input;
             while ((input = reader.readLine()) != null){
                 Label label = new Label(input);

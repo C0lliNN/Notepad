@@ -7,7 +7,7 @@
 <?import javafx.scene.text.Font?>
 <DialogPane style="-fx-background-color: #f7f7f7" xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.raphaelcollin.notepad.controller.FonteController"
-            stylesheets="@../estilo.css" prefHeight="600.0" prefWidth="600.0">
+            prefHeight="600.0" prefWidth="600.0">
 
     <padding>
         <Insets topRightBottomLeft="30"/>

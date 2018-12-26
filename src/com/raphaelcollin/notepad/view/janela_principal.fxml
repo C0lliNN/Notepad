@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.geometry.Insets?>
-<BorderPane fx:id="borderPane" stylesheets="@../estilo.css" fx:controller="com.raphaelcollin.notepad.controller.Controller"
+<BorderPane fx:id="borderPane" fx:controller="com.raphaelcollin.notepad.controller.Controller"
             xmlns:fx="http://javafx.com/fxml">
     <top>
         <MenuBar id="menuBar">              <!-- Menus -->
