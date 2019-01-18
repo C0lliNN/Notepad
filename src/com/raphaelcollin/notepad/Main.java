@@ -1,6 +1,8 @@
 package com.raphaelcollin.notepad;
 
 import com.raphaelcollin.notepad.controller.Controller;
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -8,18 +10,16 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import java.awt.*;
-import java.io.File;
-
-
 
 public class Main extends Application {
 
-    private FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("view" + File.separator + "janela_principal.fxml"));
     private Controller controller;
-
+    
     @Override
     public void start(Stage primaryStage) throws Exception{
+
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource
+                ("/com/raphaelcollin/notepad/view/janela_principal.fxml"));
 
         Parent root = fxmlLoader.load();
         controller = fxmlLoader.getController();
@@ -34,11 +34,11 @@ public class Main extends Application {
 
             // CSS
 
-        root.getStylesheets().add(getClass().getResource("estilo.css").toExternalForm());
+        root.getStylesheets().add(getClass().getResource("/com/raphaelcollin/notepad/estilo.css").toExternalForm());
 
             // Colocando Icone
 
-        primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("arquivos" + File.separator + "icone.png")));
+        primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/com/raphaelcollin/notepad/arquivos/icone.PNG")));
 
             /* Configurando quando o usuário tenta sair do programa
              * Se o conteudo estiver vazio ou estiver salvo, vamos sair imediatamente mas,
@@ -65,21 +65,17 @@ public class Main extends Application {
         });
 
         primaryStage.show();
+
     }
 
-        /* Esse método será executado quando a aplicação for fechada. Vamos salvar no arquivo config.txt
-        * informações como último caminho acessado para quando o usuário for salvar ou abrir um arquivo,
-        * ele volte no último caminho escolhido.
-        * Salvaremos também informações sobre quebra de linha, barra de status e fonte
-        *
-        * Mais informações no método salvarConfiguracao() da classe Controller*/
-
+    
     @Override
-    public void stop() throws Exception {
+    public void stop() {
         controller.salvarConfiguracao();
     }
 
     public static void main(String[] args) {
         launch(args);
     }
+    
 }

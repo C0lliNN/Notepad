@@ -2,14 +2,14 @@ package com.raphaelcollin.notepad.controller;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.text.Font;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.nio.file.FileSystems;
+import java.awt.*;
+
 
 public class FonteController {
 
@@ -26,66 +26,81 @@ public class FonteController {
 
     private Font fonteAtual = null;
 
-        /* Por haver uma grande quantidade de fontes, optei pela opção de lê-las a partir do arquivo fontes.txt
-        * evitando assim, uma granda quantidade de código nesse método
-        * a cada leitura de fonte, vamos adicionar a respectiva fonte a uma lista e no final vamos colocar essa lista
-        * no nomeFonteListView
-        *
-        * Já para a lista de tamanhos, como é um lista relativamente pequena, resolvi fazer de maneira manual*/
-
     public void initialize(){
-        ObservableList<Label> nameList = FXCollections.observableArrayList();
-        try (BufferedReader reader = new BufferedReader(new FileReader(getClass().getResource
-                ("../arquivos/fontes.txt").getFile()))){
-            String input;
-            while ((input = reader.readLine()) != null){
-                Label label = new Label(input);
-                label.setFont(new Font(input,16));
-                nameList.add(label);
-            }
-            nomeFonteListView.getItems().setAll(nameList);
-            nomeFonteListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-
-        } catch (IOException e){
-            e.printStackTrace();
-        }
-
-        ObservableList<String> tamanhoList = FXCollections.observableArrayList();
-
-        tamanhoList.addAll("8","9","10","11","12","14","16","18","20","22","24","26","28","36","48","72");
-
-        tamanhoListView.getItems().setAll(tamanhoList);
-        tamanhoListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-
-        inicializarCampos();
 
             /* Os dois próximos listener, vão lidar quando a seleção mudar, ou seja, quando for selecionado outro item
             * em uma das listas. Quando isso acontecer, vamos alerar o respectivo textField acima com o texto do item
             * selecionado e também alerar o campo de exemplo, alterando o tamanho ou o tipo da fonte */
 
         tamanhoListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if(newValue != null){
+            if(newValue != null && tamanhoListView.getSelectionModel().getSelectedItem() != null){
                 tamanhoFonteField.setText(newValue);
                 exemploField.setFont(new Font(nomeFonteListView.getSelectionModel().getSelectedItem().getText(),
                         Integer.parseInt(newValue)));
             }
         });
+
+        tamanhoListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+
         nomeFonteListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->  {
-            if(newValue != null){
+            if(newValue != null && nomeFonteListView.getSelectionModel().getSelectedItem() != null){
                 nomeFonteField.setText(newValue.getText());
                 exemploField.setFont(new Font(newValue.getText(),
                         Integer.parseInt(tamanhoListView.getSelectionModel().getSelectedItem())));
             }
         });
 
+        nomeFonteListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 
     }
 
-     /* Quando esse Controller for instanciado, o atributo vai receber a fonte atual da aplicação. Quando isso acontecer,
-      * precisamos que as ListView selecionem o respectivo nome da fonte atual e o seu tamanho para gerar uma boa
-       * experiência ao usuário. Esse é o propósito dessa função*/
+        /* Inicializando listas
+         *
+          * A Lista de nomes das fontes será criada a partir das fontes disponíveis no sistema operacional em que está
+          * sendo executada a aplicação. Utilizaremos outro Thread para realizar esse carregamento
+          *
+          * A Lista de tamanhos das fontes será definida manualmente*/
 
-    void inicializarCampos(){
+     private void inicializarListas(){
+         Task<ObservableList<Label>> task = new Task<ObservableList<Label>>() {
+             @Override
+             protected ObservableList<Label> call(){
+                 ObservableList<Label> nameList = FXCollections.observableArrayList();
+                 String [] fontes = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
+
+                 for (String font : fontes){
+                     Label label = new Label(font);
+                     label.setFont(new Font(font,16));
+                     nameList.add(label);
+                 }
+
+                 return nameList;
+             }
+         };
+
+         nomeFonteListView.itemsProperty().bind(task.valueProperty());
+
+         task.setOnSucceeded(e -> inicializarCampos());
+
+         new Thread(task).start();
+
+
+
+         ObservableList<String> tamanhoList = FXCollections.observableArrayList();
+
+         tamanhoList.addAll("8","9","10","11","12","14","16","18","20","22","24","26","28","36","48","72");
+
+
+         tamanhoListView.setItems(tamanhoList);
+     }
+
+    /* Quando esse Controller for instanciado, o atributo vai receber a fonte atual da aplicação. Quando isso acontecer,
+     * precisamos que as ListView selecionem o respectivo nome da fonte atual e o seu tamanho para gerar uma boa
+     * experiência ao usuário. Esse é o propósito dessa função*/
+
+    private void inicializarCampos(){
+
+
         if (fonteAtual != null){
             int indexNome = -1;
             for(int c = 0; c < nomeFonteListView.getItems().size(); c++){
@@ -94,7 +109,15 @@ public class FonteController {
                 }
             }
             if(indexNome >= 0){
-                nomeFonteListView.getSelectionModel().select(indexNome);
+
+                    // Bug relacionado A Threads
+
+                try {
+                    nomeFonteListView.getSelectionModel().select(indexNome);
+                } catch (Exception e){
+                    System.out.println("Erro: " + e.getMessage());
+                }
+
                 nomeFonteListView.scrollTo(indexNome);
             }
             nomeFonteField.setText(fonteAtual.getName());
@@ -108,7 +131,15 @@ public class FonteController {
             }
 
             if(indexSize >= 0){
-                tamanhoListView.getSelectionModel().select(indexSize);
+
+                    // Bug relacionado a Thread
+
+                try {
+                    tamanhoListView.getSelectionModel().select(indexSize);
+                } catch (Exception e){
+                    System.out.println("erro:" + e.getMessage());
+                }
+
                 tamanhoListView.scrollTo(indexSize);
             }
             tamanhoFonteField.setText(String.format("%.0f", fonteAtual.getSize()));
@@ -133,9 +164,10 @@ public class FonteController {
         return new Font(fontName,fontSize);
     }
 
-        // Setters
+        // Setter
 
     void setFonteAtual(Font fonteAtual) {
         this.fonteAtual = fonteAtual;
+        inicializarListas();
     }
 }

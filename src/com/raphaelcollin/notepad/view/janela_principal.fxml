@@ -76,7 +76,7 @@
     <bottom>
         <HBox alignment="CENTER" styleClass="hbox" spacing="30" prefHeight="35" prefWidth="Infinity">
             <padding>
-                <Insets topRightBottomLeft="10"/>
+                <Insets top="10" left="10" right="10" bottom="10"/>
             </padding>
             <Label text="Linha: 1" fx:id="linhaLabel">
                 <font>

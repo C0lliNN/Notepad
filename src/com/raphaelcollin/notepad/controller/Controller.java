@@ -27,7 +27,6 @@ import javafx.stage.Stage;
 import java.awt.*;
 import java.io.*;
 import java.net.URL;
-import java.nio.file.FileSystems;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -112,89 +111,108 @@ public class Controller {
 
         bottom = borderPane.getBottom();
 
-        /* Nesse momento, vamos ler configurações do arquivo config.txt
-        * Essas informações são último diretório acessado, se o menu quebra de linha e o menu Barra de status
-         * estavam ativados ou não na última vez que o programa foi executado, convencionei 0 para desativado
-          * e 1 para ativado.
-          * Também vamos ler a última fonte e seu tamanho
-          *
-          * Na primeira linha do arquivo, temos o último diretório acessado,
+        /* Nesse momento, vamos ler configurações definidas pelo usuário da última vez que a aplicação foi executada
+            do arquivo config.properties
+
+         *  Essas configurações são último diretório acessado, Se o Menu quebra de Linha está ativado ou não,
+         *  Se o Menu Barra de Status está ativado ou não e a última fonte usada pelo usuário
+         * estavam ativados ou não na última vez que o programa foi executado.
+
+          * Na primeira propriedade do arquivo, temos o último diretório acessado,
           * se o diretorio existir e o programa tiver permissão para acessa-lo, nós instaciaremos um novo arquivo
-          * com esse diretório para o atributo parentFile, se o diretório não for válido e continuara como nulo
-          * e o programa abriará no diretório padrao
+          * com esse diretório para o atributo parentFile, se o diretório não for válido, o atributo parentFile ficará nulo
+          * e os fileChooser vão abrir no diretório pardrão
           *
-          * Na Segunda e terceira linha, temos as informações dos menus Quebra de linha e Barra de Status
-          * Se o conteúdo da linha for 0, o menu será desativado e se for 1 será ativado e processado o método
+          * Na Segunda e terceira propriedade, temos as configurações dos menus Quebra de linha e Barra de Status
+          * Se o conteúdo da linha for false, o menu será desativado e se for true será ativado e processado o método
           * correspondente
           *
-          * Na Quarta e última linha, temos a informação do nome da fonte e seu tamnho, separados por vírgula
-          * nós vamos ler esses dados e instanciar um novo objeto para o atributon fonteAutal
+          * Na Quarta e última linha, temos a informação do nome da fonte e seu tamanho, separados por vírgula
+          * nós vamos ler esses dados e instanciar um novo objeto para o atributo fonteAutal
           * */
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(getClass().getResource("../arquivos/config.txt").getFile()))) {
-            String input = reader.readLine();
-            if (input != null && !input.trim().isEmpty()) {
-                File file = new File(input);
+        Properties properties = new Properties();
+
+        try (BufferedInputStream reader = new BufferedInputStream(new FileInputStream("config.properties"))) {
+
+            properties.load(reader);
+
+            String parentFileProperty = properties.getProperty("parentFile");
+
+            if (!parentFileProperty.equals("null") && !parentFileProperty.trim().isEmpty()) {
+                File file = new File(parentFileProperty);
                 if(file.exists() && file.canExecute()){
-                    parentFile = new File(input);
+                    this.parentFile = new File(parentFileProperty);
                 }
             }
-            input = reader.readLine();
-            if(input.equals("1")){
+
+            String quebraLinhaMenuProperty = properties.getProperty("quebraLinhaMenu");
+
+            if(quebraLinhaMenuProperty.equals("true")){
                 quebraLinhaMenu.setSelected(true);
             } else {
                 quebraLinhaMenu.setSelected(false);
             }
-            handleQuebraDeLinha();
-            input = reader.readLine();
-            if(input.equals("1")){
+
+            String barraStatusMenuProperty = properties.getProperty("barraStatusMenu");
+
+            if(barraStatusMenuProperty.equals("true")){
                 barraStatusMenu.setSelected(true);
             } else{
                 barraStatusMenu.setSelected(false);
             }
-            handleBarraDeStatus();
-            input = reader.readLine();
-            String[] partes = input.split(",");
+
+            String fonteProperty = properties.getProperty("fonte");
+            String[] partes = fonteProperty.split(",");
             fonteAtual = new Font(partes[0],Integer.parseInt(partes[1]));
             textArea.setFont(fonteAtual);
 
-                /* Nesse listener nós vamos controlar quando a posição do caret (atual posição de digitação) mudar
-                * quando isso acontecer, atualizaremos os atributos linha, linhaLabel, coluna e colunaLabel que
-                * são usados na Barra de Status */
 
-            textArea.caretPositionProperty().addListener( (observable, oldValue, newValue) ->  {
-                if (newValue != null){
-                    int position = textArea.getCaretPosition();
-                    int contador = 1;
-                    int soma = 1;
 
-                    for (int c = 0; c < position; c++){
-                        if (textArea.getText().charAt(c) == '\n'){
-                            contador++;
-                            soma = 1;
-                        } else{
-                            soma++;
-                        }
-                    }
-
-                    linha = contador;
-                    coluna = soma;
-
-                    linhaLabel.setText("Linha: " + linha);
-                    colunaLabel.setText("Coluna: " + coluna);
-
-                }
-
-            });
-
-            /* Quando uma tecla que altere o texto for acionado, o atributo estaSalvo e atualizado,
-                indicando que o arquivo não está mais salvo.*/
-
-            textArea.textProperty().addListener( (observable, oldValue, newValue) -> estaSalvo = false);
 
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Erro: " + e.getMessage());
+            quebraLinhaMenu.setSelected(true);
+            barraStatusMenu.setSelected(false);
         }
+
+        handleQuebraDeLinha();
+        handleBarraDeStatus();
+
+        /* Nesse listener nós vamos controlar quando a posição do caret (atual posição de digitação) mudar
+         * quando isso acontecer, atualizaremos os atributos linha, linhaLabel, coluna e colunaLabel que
+         * são usados na Barra de Status */
+
+        textArea.caretPositionProperty().addListener( (observable, oldValue, newValue) ->  {
+            if (newValue != null){
+                int position = textArea.getCaretPosition();
+                int contador = 1;
+                int soma = 1;
+
+                for (int c = 0; c < position; c++){
+                    if (textArea.getText().charAt(c) == '\n'){
+                        contador++;
+                        soma = 1;
+                    } else{
+                        soma++;
+                    }
+                }
+
+                linha = contador;
+                coluna = soma;
+
+                linhaLabel.setText("Linha: " + linha);
+                colunaLabel.setText("Coluna: " + coluna);
+
+            }
+
+        });
+
+
+        /* Quando uma tecla que altere o texto for acionado, o atributo estaSalvo e atualizado,
+                indicando que o arquivo não está mais salvo.*/
+
+        textArea.textProperty().addListener( (observable, oldValue, newValue) -> estaSalvo = false);
 
 
     }
@@ -206,7 +224,7 @@ public class Controller {
        * do atributo file que representa o arquivo atual*/
 
     @FXML
-    public void handleNovo() throws Exception {
+    public void handleNovo(){
         if (estaSalvo || textArea.getText().trim().isEmpty()) {
             textArea.setText("");
             file = null;
@@ -227,7 +245,7 @@ public class Controller {
       * Depois que o arquivo for selecionado pelo usuário, vamos ler o arquivo e exibir seu conteudo no textArea*/
 
     @FXML
-    public void handleAbrir() throws Exception {
+    public void handleAbrir(){
         int result = 0;
         if (!estaSalvo && !textArea.getText().trim().isEmpty()) {
             result = exibirConfirmacaoSaida();
@@ -267,6 +285,8 @@ public class Controller {
                     estaSalvo = true;
                     textArea.positionCaret(textArea.getText().length());
                     parentFile = file.getParentFile();
+                } catch (IOException e){
+                    System.out.println("Erro: " + e.getMessage());
                 }
             }
         }
@@ -279,7 +299,7 @@ public class Controller {
       * um arquivo e salvar ele com o conteudo do textArea*/
 
     @FXML
-    public void handleSalvar() throws IOException {
+    public void handleSalvar(){
         if (!estaSalvo) {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Salvar Arquivo");
@@ -297,6 +317,8 @@ public class Controller {
                     writer.write(textArea.getText());
                     estaSalvo = true;
                     parentFile = file.getParentFile();
+                } catch (IOException e){
+                    System.out.println("Erro: " + e.getMessage());
                 }
             }
         }
@@ -308,7 +330,7 @@ public class Controller {
       * abrir o diálogo no diretório padrão*/
 
     @FXML
-    public void handleSalvarComo() throws IOException {
+    public void handleSalvarComo(){
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Salvar Arquivo");
 
@@ -329,6 +351,8 @@ public class Controller {
                 writer.write(textArea.getText());
                 estaSalvo = true;
                 parentFile = file.getParentFile();
+            } catch (IOException e){
+                System.out.println("Erro: " + e.getMessage());
             }
         }
 
@@ -340,7 +364,7 @@ public class Controller {
 
 
     @FXML
-    public void handleSair() throws Exception {
+    public void handleSair(){
         if (estaSalvo || textArea.getText().trim().isEmpty()) {
             Platform.exit();
         } else {
@@ -435,8 +459,7 @@ public class Controller {
 
         textArea.selectRange(0,0);
 
-        GridPane gridPane = FXMLLoader.load(getClass().getResource(".." + File.separator + "view" + File.separator +
-                "janela_localizar.fxml"));
+        GridPane gridPane = FXMLLoader.load(getClass().getResource("/com/raphaelcollin/notepad/view/janela_localizar.fxml"));
         gridPane.setStyle("-fx-background-color: #F7F7F7");
 
         TextField textField = (TextField) gridPane.getChildren().get(1);
@@ -490,8 +513,7 @@ public class Controller {
         stage.setTitle("Localizar");
         stage.setScene(new Scene(gridPane, 400, 120));
         stage.initOwner(borderPane.getScene().getWindow());
-        stage.getIcons().add(new Image(getClass().getResourceAsStream(".." + File.separator + "arquivos" + File.separator +
-                "icone.png")));
+        stage.getIcons().add(new Image(getClass().getResourceAsStream("/com/raphaelcollin/notepad/arquivos/icone.PNG")));
         stage.setResizable(false);
         stage.show();
 
@@ -535,8 +557,7 @@ public class Controller {
 
         textArea.selectRange(0,0);
 
-        GridPane gridPane = FXMLLoader.load(getClass().getResource(".." + File.separator + "view" + File.separator +
-                "janela_substituir.fxml"));
+        GridPane gridPane = FXMLLoader.load(getClass().getResource("/com/raphaelcollin/notepad/view/janela_substituir.fxml"));
         gridPane.setStyle("-fx-background-color: #F7F7F7");
 
         VBox vBox1 = (VBox) gridPane.getChildren().get(0);
@@ -714,8 +735,7 @@ public class Controller {
         stage.setTitle("Substituir");
         stage.setResizable(false);
         stage.initOwner(borderPane.getScene().getWindow());
-        stage.getIcons().add(new Image(getClass().getResourceAsStream(".." + File.separator + "arquivos" + File.separator +
-                "icone.png")));
+        stage.getIcons().add(new Image(getClass().getResourceAsStream("/com/raphaelcollin/notepad/arquivos/icone.PNG")));
         stage.show();
 
     }
@@ -725,8 +745,7 @@ public class Controller {
 
     @FXML
     public void handleIrPara() throws Exception {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(".." + File.separator +  "view" + File.separator +
-                "janela_irpara.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/raphaelcollin/notepad/view/janela_irpara.fxml"));
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setDialogPane(fxmlLoader.load());
         dialog.setTitle("Ir para");
@@ -788,10 +807,9 @@ public class Controller {
     @FXML
     public void handleFonte() throws Exception{
         Dialog<ButtonType> dialog = new Dialog<>();
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(".." + File.separator + "view" + File.separator +
-                "janela_fonte.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/raphaelcollin/notepad/view/janela_fonte.fxml"));
         dialog.setDialogPane(fxmlLoader.load());
-        dialog.getDialogPane().getStylesheets().add(getClass().getResource(".." + File.separator + "estilo.css").toExternalForm());
+        dialog.getDialogPane().getStylesheets().add(getClass().getResource("/com/raphaelcollin/notepad/estilo.css").toExternalForm());
         dialog.setTitle("Fonte");
         dialog.initOwner(borderPane.getScene().getWindow());
 
@@ -799,7 +817,6 @@ public class Controller {
 
         if (fonteAtual != null){
             fonteController.setFonteAtual(fonteAtual);
-            fonteController.inicializarCampos();
         }
 
         Optional<ButtonType> resultado = dialog.showAndWait();
@@ -871,39 +888,45 @@ public class Controller {
     }
 
         /* Esse método será executado quando a aplicação for fechada, quando isso acontecer
-        * vamos salvar no arquvo config.txt algumas configurações definidas pelo usuário como
+        * vamos salvar no arquivo config.properties algumas configurações definidas pelo usuário como
         * último diretório usado, estados dos menus Quebra Automatica de Linha e Barra de Status
         * e a fonte atual
         *
-        * Para os menus definiremos 0 para desativado e 1 para ativado
+        * Para os menus definiremos false para desativado e true para ativado
         *
         * */
 
-    public void salvarConfiguracao() throws Exception {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(getClass().getResource("../arquivos/config.txt").getFile()))) {
+    public void salvarConfiguracao(){
+
+        Properties properties = new Properties();
+
+        try (BufferedOutputStream writer = new BufferedOutputStream(new FileOutputStream("config.properties"))) {
             if(parentFile != null){
-                writer.write(parentFile.toString());
+                properties.setProperty("parentFile",parentFile.toString());
             } else{
-                writer.write("null");
+                properties.setProperty("parentFile","null");
             }
-            writer.newLine();
+
             if(quebraLinhaMenu.isSelected()){
-                writer.write("1");
+                properties.setProperty("quebraLinhaMenu","true");
             } else{
-                writer.write("0");
+                properties.setProperty("quebraLinhaMenu","false");
             }
-            writer.newLine();
             if(barraStatusMenu.isSelected()){
-                writer.write("1");
+                properties.setProperty("barraStatusMenu","true");
             } else{
-                writer.write("0");
+                properties.setProperty("barraStatusMenu","false");
             }
-            writer.newLine();
+
             if(fonteAtual != null){
-                writer.write(fonteAtual.getName() + "," + String.format("%.0f",fonteAtual.getSize()));
+                properties.setProperty("fonte",fonteAtual.getName() + "," + String.format("%.0f",fonteAtual.getSize()));
             } else {
-                writer.write("Arial,16");
+                properties.setProperty("fonte","Arial,16");
             }
+
+            properties.store(writer,null);
+        } catch (IOException e){
+            System.out.println("Erro: " + e.getMessage());
         }
     }
 
@@ -914,10 +937,14 @@ public class Controller {
     * se o usuário escolher a opção não salvar, retornará 0 e o programa executará a operação solicitada
       se o usuário escolher a opção cancelar, retornará -1 o programa não executará a operação solicitada */
 
-    public int exibirConfirmacaoSaida() throws Exception {
+    public int exibirConfirmacaoSaida(){
         Dialog<ButtonType> dialog = new Dialog<>();
-        dialog.setDialogPane(FXMLLoader.load(getClass().getResource(".." + File.separator +"view"  + File.separator +
-                "janela_saida.fxml")));
+        try {
+            dialog.setDialogPane(FXMLLoader.load(getClass().getResource("/com/raphaelcollin/notepad/view/janela_saida.fxml")));
+        } catch (IOException e){
+            System.out.println("Erro: " + e.getMessage());
+        }
+
         dialog.setTitle("Bloco de Notas");
         dialog.initOwner(borderPane.getScene().getWindow());
         Optional<ButtonType> result = dialog.showAndWait();

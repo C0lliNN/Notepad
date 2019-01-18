@@ -10,7 +10,7 @@
             prefHeight="600.0" prefWidth="600.0">
 
     <padding>
-        <Insets topRightBottomLeft="30"/>
+        <Insets top="30" right="10" left="10" bottom="10"/>
     </padding>
 
     <content>
