@@ -8,6 +8,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Font;
+import javafx.util.Callback;
 import java.awt.*;
 
 
@@ -42,15 +43,61 @@ public class FonteController {
 
         tamanhoListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 
-        nomeFonteListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->  {
-            if(newValue != null && nomeFonteListView.getSelectionModel().getSelectedItem() != null){
-                nomeFonteField.setText(newValue.getText());
-                exemploField.setFont(new Font(newValue.getText(),
-                        Integer.parseInt(tamanhoListView.getSelectionModel().getSelectedItem())));
+        nomeFonteListView.setOnMouseClicked( event ->  {
+            if(nomeFonteListView.getSelectionModel().getSelectedItem() != null){
+                Label label = nomeFonteListView.getSelectionModel().getSelectedItem();
+                nomeFonteField.setText(label.getText());
+            }
+        });
+
+            // Configurando ToolTip
+
+        nomeFonteListView.setCellFactory(new Callback<ListView<Label>, ListCell<Label>>() {
+            @Override
+            public ListCell<Label> call(ListView<Label> param) {
+                final Tooltip tooltip = new Tooltip();
+                return  new ListCell<Label>(){
+                    @Override
+                    public void updateItem(Label item, boolean empty){
+                        super.updateItem(item,empty);
+                        if(item != null){
+                            setText(item.getText());
+                            tooltip.setText(item.getText());
+                            setTooltip(tooltip);
+                            setFont(new Font(item.getText(),16));
+                        }
+                    }
+                };
+
             }
         });
 
         nomeFonteListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+
+
+        /* Quando o usuário digitar algo no Campo Nome da Fonte, vamos pesquisar as fontes que se enquadram nos caracteres
+         * digitados e mostrar para o usuário, se nenhuma fonte for encontrada, vamos mostrar as fontes desde o inicio */
+
+        nomeFonteField.setOnKeyPressed(event -> {
+
+                boolean encontrou = false;
+
+                for (Label label : nomeFonteListView.itemsProperty().get()){
+                    if (label.getText().toLowerCase().indexOf(nomeFonteField.getText().toLowerCase()) == 0){
+                        nomeFonteListView.scrollTo(label);
+                        nomeFonteListView.getSelectionModel().select(label);
+                        encontrou = true;
+                        break;
+                    }
+                }
+
+                if (!encontrou){
+                    nomeFonteListView.scrollTo(0);
+                    nomeFonteListView.getSelectionModel().select(0);
+                }
+
+        });
+
 
     }
 
@@ -65,20 +112,22 @@ public class FonteController {
          Task<ObservableList<Label>> task = new Task<ObservableList<Label>>() {
              @Override
              protected ObservableList<Label> call(){
-                 ObservableList<Label> nameList = FXCollections.observableArrayList();
-                 String [] fontes = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
+                 ObservableList<Label> fontes = FXCollections.observableArrayList();
+                 String [] fontes2 = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
 
-                 for (String font : fontes){
+                 for (String font : fontes2){
                      Label label = new Label(font);
                      label.setFont(new Font(font,16));
-                     nameList.add(label);
+                     fontes.add(label);
                  }
-
-                 return nameList;
+                 return fontes;
              }
          };
 
          nomeFonteListView.itemsProperty().bind(task.valueProperty());
+
+            /* Quando o carregamento das fontes terminar, vamos inicializar os campos
+             * para que quando o usuário digite o nome de uma fonte no textField, essa fonte seja localizada */
 
          task.setOnSucceeded(e -> inicializarCampos());
 
@@ -110,15 +159,9 @@ public class FonteController {
             }
             if(indexNome >= 0){
 
-                    // Bug relacionado A Threads
-
-                try {
-                    nomeFonteListView.getSelectionModel().select(indexNome);
-                } catch (Exception e){
-                    System.out.println("Erro: " + e.getMessage());
-                }
-
+                nomeFonteListView.getSelectionModel().select(indexNome);
                 nomeFonteListView.scrollTo(indexNome);
+
             }
             nomeFonteField.setText(fonteAtual.getName());
 
@@ -132,14 +175,7 @@ public class FonteController {
 
             if(indexSize >= 0){
 
-                    // Bug relacionado a Thread
-
-                try {
-                    tamanhoListView.getSelectionModel().select(indexSize);
-                } catch (Exception e){
-                    System.out.println("erro:" + e.getMessage());
-                }
-
+                tamanhoListView.getSelectionModel().select(indexSize);
                 tamanhoListView.scrollTo(indexSize);
             }
             tamanhoFonteField.setText(String.format("%.0f", fonteAtual.getSize()));
@@ -149,8 +185,18 @@ public class FonteController {
             tamanhoListView.getSelectionModel().select(6);
             tamanhoFonteField.setText("16");
         }
-    }
 
+        /* O próximo listener, vai lidar quando a seleção mudar, ou seja, quando for selecionado outro item
+         * em uma das listas. Quando isso acontecer, vamos alerar o respectivo textField acima com o texto do item
+         * selecionado e também alerar o campo de exemplo, alterando o tamanho ou o tipo da fonte */
+
+        nomeFonteListView.getSelectionModel().selectedItemProperty().addListener( (observable, oldValue, newValue) -> {
+            Label label = nomeFonteListView.getSelectionModel().getSelectedItem();
+            exemploField.setFont(new Font(label.getText(),
+                    Integer.parseInt(tamanhoListView.getSelectionModel().getSelectedItem())));
+        });
+
+    }
 
         /*
         * Esse método será executado quando o botão Ok do diálogo for acionado. Quando isso acontecer,
@@ -159,8 +205,8 @@ public class FonteController {
         * */
 
     Font processarResultado(){
-        String fontName = nomeFonteField.getText();
-        int fontSize = Integer.parseInt(tamanhoFonteField.getText());
+        String fontName = nomeFonteListView.getSelectionModel().getSelectedItem().getText();
+        int fontSize = Integer.parseInt(tamanhoListView.getSelectionModel().getSelectedItem());
         return new Font(fontName,fontSize);
     }
 
