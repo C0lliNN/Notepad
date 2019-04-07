@@ -1,6 +1,6 @@
 package com.raphaelcollin.notepad;
 
-import com.raphaelcollin.notepad.controller.Controller;
+import com.raphaelcollin.notepad.controller.PrincipalController;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import javafx.application.Application;
@@ -13,16 +13,15 @@ import javafx.stage.Stage;
 
 public class Main extends Application {
 
-    private Controller controller;
+    private PrincipalController principalController;
     
     @Override
     public void start(Stage primaryStage) throws Exception{
 
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource
-                ("/com/raphaelcollin/notepad/view/janela_principal.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/janela_principal.fxml"));
 
         Parent root = fxmlLoader.load();
-        controller = fxmlLoader.getController();
+        principalController = fxmlLoader.getController();
         primaryStage.setTitle("Bloco de Notas");
 
             // Configurando largura e altura para 70% da resolução atual do computador que está sendo executado
@@ -34,11 +33,11 @@ public class Main extends Application {
 
             // CSS
 
-        root.getStylesheets().add(getClass().getResource("/com/raphaelcollin/notepad/estilo.css").toExternalForm());
+        root.getStylesheets().add(getClass().getResource("/estilo.css").toExternalForm());
 
             // Colocando Icone
 
-        primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/com/raphaelcollin/notepad/arquivos/icone.PNG")));
+        primaryStage.getIcons().add(new Image("file:arquivos/icone.png"));
 
             /* Configurando quando o usuário tenta sair do programa
              * Se o conteudo estiver vazio ou estiver salvo, vamos sair imediatamente mas,
@@ -47,11 +46,11 @@ public class Main extends Application {
 
         primaryStage.setOnCloseRequest(e -> {
 
-            if(controller.getTextArea().getText().trim().isEmpty() || controller.isEstaSalvo()){
+            if(principalController.getTextArea().getText().trim().isEmpty() || principalController.isEstaSalvo()){
                 Platform.exit();
             } else{
                 try {
-                    int result = controller.exibirConfirmacaoSaida();
+                    int result = principalController.exibirConfirmacaoSaida();
                     if(result >= 0){
                         Platform.exit();
                     } else{
@@ -71,7 +70,7 @@ public class Main extends Application {
     
     @Override
     public void stop() {
-        controller.salvarConfiguracao();
+        principalController.salvarConfiguracao();
     }
 
     public static void main(String[] args) {

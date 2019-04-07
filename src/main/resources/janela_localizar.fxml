@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.Font?>
+<GridPane fx:id="gridPane" fx:controller="com.raphaelcollin.notepad.controller.LocalizarController"
+          style="-fx-background-color: #f7f7f7" alignment="TOP_CENTER" vgap="15" hgap="30"
+          xmlns:fx="http://javafx.com/fxml">
+
+    <padding>
+        <Insets top="30" bottom="20"/>
+    </padding>
+
+    <VBox spacing="30" GridPane.rowIndex="0" GridPane.columnIndex="0">
+
+        <HBox alignment="CENTER_LEFT" spacing="10">
+            <Label text="Localizar:">
+                <font>
+                    <Font name="Arial" size="20"/>
+                </font>
+            </Label>
+            <TextField fx:id="textField">
+                <font>
+                    <Font name="Arial" size="20"/>
+                </font>
+            </TextField>
+        </HBox>
+
+        <CheckBox GridPane.rowIndex="1" GridPane.columnIndex="0" fx:id="checkBox" text="Diferenciar maiúsculas de minúsculas">
+            <font>
+                <Font name="Arial" size="18"/>
+            </font>
+        </CheckBox>
+    </VBox>
+
+
+    <VBox spacing="10" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0" GridPane.columnIndex="1"
+          GridPane.columnSpan="2" alignment="TOP_CENTER">
+        <Button prefWidth="150" defaultButton="true" onAction="#handleLocalizar" text="Localizar Próximo">
+            <font>
+                <Font name="Arial" size="16"/>
+            </font>
+        </Button>
+        <Button prefWidth="150" onAction="#handleCancelar" text="Cancelar">
+            <font>
+                <Font name="Arial" size="16"/>
+            </font>
+        </Button>
+    </VBox>
+
+</GridPane>

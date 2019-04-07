@@ -10,7 +10,8 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<GridPane style="-fx-background-color: #f7f7f7" alignment="TOP_CENTER" hgap="40" vgap="10" xmlns="http://javafx.com/javafx/8.0.172-ea">
+<GridPane fx:id="gridPane" fx:controller="com.raphaelcollin.notepad.controller.SubstituirController"
+          alignment="TOP_CENTER" hgap="40" vgap="10" xmlns:fx="http://javafx.com/javafx/8.0.172-ea">
     <padding>
         <Insets bottom="20" top="20" />
     </padding>
@@ -25,7 +26,7 @@
                     <Font name="Arial" size="18" />
                 </font>
             </Label>
-            <TextField prefWidth="200">
+            <TextField fx:id="localizarField" prefWidth="200">
                 <font>
                     <Font name="Arial" size="18" />
                 </font>
@@ -40,7 +41,7 @@
                     <Font name="Arial" size="18" />
                 </font>
             </Label>
-            <TextField prefWidth="200">
+            <TextField fx:id="substituirField" prefWidth="200">
                 <font>
                     <Font name="Arial" size="18" />
                 </font>
@@ -49,17 +50,17 @@
 
         <HBox/>
 
-        <CheckBox text="Diferenciar maiúsculas de minúsculas" />
+        <CheckBox fx:id="checkBox" text="Diferenciar maiúsculas de minúsculas" />
 
     </VBox>
 
         <!-- Botões -->
 
     <VBox spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="0">
-        <Button prefWidth="150" text="Localizar Próximo" />
-        <Button prefWidth="150" text="Substituir" />
-        <Button prefWidth="150" text="Substituir Todos" />
-        <Button prefWidth="150" text="Cancelar" />
+        <Button onAction="#handleLocalizar" prefWidth="150" text="Localizar Próximo" />
+        <Button defaultButton="true" onAction="#handleSubstituir" prefWidth="150" text="Substituir" />
+        <Button onAction="#handleSubstituirTudo" prefWidth="150" text="Substituir Todos" />
+        <Button onAction="#handleCancelar" prefWidth="150" text="Cancelar" />
     </VBox>
 
 </GridPane>

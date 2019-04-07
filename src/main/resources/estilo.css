@@ -1,7 +1,7 @@
 
     /* Formatação da Barra de Menus*/
 
-#menuBar{
+.menu-bar{
     -fx-background-color: white;
     -fx-border-width: 0px 0px 1px 0px;
     -fx-border-color: #c9cdd3;

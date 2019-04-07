@@ -143,7 +143,7 @@ public class FonteController {
          tamanhoListView.setItems(tamanhoList);
      }
 
-    /* Quando esse Controller for instanciado, o atributo vai receber a fonte atual da aplicação. Quando isso acontecer,
+    /* Quando esse PrincipalController for instanciado, o atributo vai receber a fonte atual da aplicação. Quando isso acontecer,
      * precisamos que as ListView selecionem o respectivo nome da fonte atual e o seu tamanho para gerar uma boa
      * experiência ao usuário. Esse é o propósito dessa função*/
 
@@ -200,7 +200,7 @@ public class FonteController {
 
         /*
         * Esse método será executado quando o botão Ok do diálogo for acionado. Quando isso acontecer,
-        * vamos retornar a fonte selecionada pelo usuário para o Controller principal, para que ele possa alterar a fonte
+        * vamos retornar a fonte selecionada pelo usuário para o PrincipalController principal, para que ele possa alterar a fonte
         * do textArea
         * */
 

@@ -1,17 +1,16 @@
 package com.raphaelcollin.notepad.controller;
 
+
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.Button;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -19,8 +18,6 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -32,7 +29,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-public class Controller {
+public class PrincipalController {
 
     @FXML
     private BorderPane borderPane;
@@ -133,7 +130,7 @@ public class Controller {
 
         Properties properties = new Properties();
 
-        try (BufferedInputStream reader = new BufferedInputStream(new FileInputStream("config.properties"))) {
+        try (BufferedInputStream reader = new BufferedInputStream(new FileInputStream("arquivos/config.properties"))) {
 
             properties.load(reader);
 
@@ -254,7 +251,8 @@ public class Controller {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Abrir Arquivo");
 
-            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT files (*.txt)", "*.txt");
+            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT files (*.txt)",
+                    "*.txt");
             fileChooser.getExtensionFilters().add(extFilter);
 
 
@@ -304,7 +302,8 @@ public class Controller {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Salvar Arquivo");
 
-            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT files (*.txt)", "*.txt");
+            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT files (*.txt)",
+                    "*.txt");
             fileChooser.getExtensionFilters().add(extFilter);
             if (parentFile != null && parentFile.canExecute() && parentFile.exists()) {
                 fileChooser.setInitialDirectory(parentFile);
@@ -446,74 +445,27 @@ public class Controller {
      /* Nesse método, vamos lidar com o sub-menu Localizar, quando esse menu for acionado, exibiremos outra
      * janela com dois botões: Localizar e Cancelar
      *
-     * Quando o botão Localizar for acionado, a aplicação vai procurar pela string contida no textField no textArea
-     * se a string for encontrada, a aplicação vai destacar essa string no textArea.
-     * Se após ser encontrada uma vez, o usuário procurar pela mesma string, a busca começará após a posição da última
-     * string, permitindo que a aplicação ache todas strings contidas no textArea mas se a string informada for diferente
-     * a aplicação começa a procurar da posição zero
-     *
-     * Quando o botão Cancelar for acionado, a aplicação vai fechar a nova janela e voltar para a janela principal*/
+     * Para mais detalhes, olhe a classe LocalizarController */
 
     @FXML
     public void handleLocalizar() throws Exception {
 
         textArea.selectRange(0,0);
 
-        GridPane gridPane = FXMLLoader.load(getClass().getResource("/com/raphaelcollin/notepad/view/janela_localizar.fxml"));
-        gridPane.setStyle("-fx-background-color: #F7F7F7");
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/janela_localizar.fxml"));
 
-        TextField textField = (TextField) gridPane.getChildren().get(1);
+        GridPane gridPane = fxmlLoader.load();
 
-        HBox hBox = (HBox) gridPane.getChildren().get(2);
-
-        Button localizar = (Button) hBox.getChildren().get(0);
-        localizar.setDefaultButton(true);
         localizarIndice = 0;
-        localizar.setOnAction(e -> {
-            String text = textField.getText();
-            if (text.isEmpty()) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Erro no processamento");
-                alert.initOwner(gridPane.getScene().getWindow());
-                alert.setHeaderText("Campo vazio!");
-                alert.setContentText("Preencha o campo localizar para que seja realizado o precessamento");
-                alert.show();
-            } else {
-                int index;
-                if (localizarString != null && (localizarString.equals(text))) {
-                    index = textArea.getText().indexOf(text, localizarIndice);
-                } else {
-                    index = textArea.getText().indexOf(text);
-                }
 
-                if (index >= 0) {
-                    textArea.selectRange(index, index + text.length());
-                    localizarIndice = index + text.length() + 1;
-                    localizarString = text;
-                } else if (!localizarString.equals(text)) {
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Erro no processamento");
-                    alert.initOwner(gridPane.getScene().getWindow());
-                    alert.setHeaderText("Texto não encontrado!");
-                    alert.setContentText("Não foi possível encontrar '" + text + "'");
-                    alert.show();
-                }
-            }
-
-
-        });
-
-        Button cancelar = (Button) hBox.getChildren().get(1);
-        cancelar.setOnAction(event -> {
-            Stage stage = (Stage) gridPane.getScene().getWindow();
-            stage.close();
-        });
+        LocalizarController localizarController = fxmlLoader.getController();
+        localizarController.setPrincipalController(this);
 
         Stage stage = new Stage();
         stage.setTitle("Localizar");
-        stage.setScene(new Scene(gridPane, 400, 120));
+        stage.setScene(new Scene(gridPane, 600, 150));
         stage.initOwner(borderPane.getScene().getWindow());
-        stage.getIcons().add(new Image(getClass().getResourceAsStream("/com/raphaelcollin/notepad/arquivos/icone.PNG")));
+        stage.getIcons().add(new Image("file:arquivos/icone.png"));
         stage.setResizable(false);
         stage.show();
 
@@ -526,7 +478,7 @@ public class Controller {
     @FXML
     public void handleLocalizarProxima() {
         if (localizarString != null) {
-            localizarIndice = textArea.getText().indexOf(localizarString, localizarIndice);
+            localizarIndice = textArea.getText().toLowerCase().indexOf(localizarString.toLowerCase(), localizarIndice);
             if (localizarIndice >= 0) {
                 textArea.selectRange(localizarIndice, localizarIndice + localizarString.length());
                 localizarIndice = localizarIndice + localizarString.length() + 1;
@@ -540,202 +492,29 @@ public class Controller {
      * exibiremos uma nova janela com um Text Field e quatro botões (Localizar Proximo, Substituir, Substituir Todos
       * e cancelar).
       *
-      * Quando o botão localizar próximo for acionado, o processamento será o mesmo do método handleLocalizar()
-      *
-      * Quando o botão substituir for acionado, a aplicação vai procurar no texto a string que está no text field,
-      * se ele encontrar vai substituir esse texto. A cada interação com esse botão, o atributo localizarIndice é atualizado
-      * para quando for realizada uma nova busca, a aplicação começar a procurar a partir do último texto encontrar, permitindo
-      * que se possa procurar por todas strings contidas no textArea
-      *
-      * Qaundo o botão substituir todos for acionado, a aplicação vai procurar pela string informada no textField no textArea
-      * e substituirá todas strings encontradas, diferentemente do botão substituir que só substitui uma de cada vez
-      *
-      * Quando o botão Cancelar for acionado, a aplicação vai fechar a nova janela e voltar para a janela principal*/
+      * Para mais detalhes, olhe a classe SubstituirController*/
 
     @FXML
     public void handleSubstituir() throws Exception {
 
         textArea.selectRange(0,0);
 
-        GridPane gridPane = FXMLLoader.load(getClass().getResource("/com/raphaelcollin/notepad/view/janela_substituir.fxml"));
-        gridPane.setStyle("-fx-background-color: #F7F7F7");
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/janela_substituir.fxml"));
 
-        VBox vBox1 = (VBox) gridPane.getChildren().get(0);
+        GridPane gridPane = fxmlLoader.load();
 
-        HBox hBox1 = (HBox) vBox1.getChildren().get(0);
+        SubstituirController substituirController = fxmlLoader.getController();
 
-        TextField localizarField = (TextField) hBox1.getChildren().get(1);
-
-        HBox hBox2 = (HBox) vBox1.getChildren().get(1);
-
-        TextField substituirField = (TextField) hBox2.getChildren().get(1);
-
-        CheckBox checkBox = (CheckBox) vBox1.getChildren().get(3);
-
-        VBox vBox2 = (VBox) gridPane.getChildren().get(1);
-
-        Button localizarButton = (Button) vBox2.getChildren().get(0);
+        substituirController.setPrincipalController(this);
 
         localizarIndice = 0;
-
-        localizarButton.setOnAction(e -> {
-            String text = localizarField.getText();
-            if (text.isEmpty()) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Erro no processamento");
-                alert.initOwner(gridPane.getScene().getWindow());
-                alert.setHeaderText("Campo vazio!");
-                alert.setContentText("Preencha o campo localizar para que seja realizado o precessamento");
-                alert.show();
-            } else {
-                int index;
-                if (localizarString != null && (localizarString.equals(text))) {
-                    if (checkBox.isSelected()) {
-                        index = textArea.getText().indexOf(text, localizarIndice);
-                    } else {
-                        index = textArea.getText().toLowerCase().indexOf(text.toLowerCase(), localizarIndice);
-                    }
-
-                } else {
-                    if (checkBox.isSelected()) {
-                        index = textArea.getText().indexOf(text);
-                    } else {
-                        index = textArea.getText().toLowerCase().indexOf(text.toLowerCase());
-                    }
-                }
-
-                if (index >= 0) {
-                    textArea.selectRange(index, index + text.length());
-                    localizarIndice = index + text.length() + 1;
-                    localizarString = text;
-                } else if (!localizarString.equals(text)) {
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Erro no processamento");
-                    alert.initOwner(gridPane.getScene().getWindow());
-                    alert.setHeaderText("Texto não encontrado!");
-                    alert.setContentText("Não foi possível encontrar '" + text + "'");
-                    alert.show();
-                }
-            }
-        });
-
-        Button substituirButton = (Button) vBox2.getChildren().get(1);
-
-        substituirButton.setDefaultButton(true);
-
-        substituirButton.setOnAction(e -> {
-
-            String localizar = localizarField.getText();
-
-            if(!localizar.equals(localizarString)){
-                localizarIndice = 0;
-            }
-
-            localizarString = localizar;
-
-            String substituir = substituirField.getText();
-
-            if (localizar.isEmpty() || substituir.isEmpty()) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Erro no processamento");
-                alert.setHeaderText("Campo Vazio!");
-                alert.setContentText("Todos os campos devem ser preenchidos para realizar o processamento!");
-                alert.initOwner(gridPane.getScene().getWindow());
-                alert.show();
-            } else {
-                int index;
-                if(checkBox.isSelected()){
-                    index = textArea.getText().indexOf(localizar, localizarIndice);
-                } else{
-                    index = textArea.getText().toLowerCase().indexOf(localizar.toLowerCase(), localizarIndice);
-                }
-
-                if (index >= 0) {
-                    textArea.replaceText(index,index + localizar.length(),substituir);
-                    textArea.selectRange(index,index + substituir.length());
-                    localizarIndice = index + substituir.length() + 1;
-                } else {
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Erro no processamento");
-                    alert.setHeaderText("Texto não encontrado!");
-                    alert.setContentText("Não foi possível encontrar '" + localizar + "'");
-                    alert.initOwner(gridPane.getScene().getWindow());
-                    alert.show();
-                    localizarIndice = 0;
-                }
-
-            }
-
-        });
-
-        Button substituirTudoButton = (Button) vBox2.getChildren().get(2);
-
-        substituirTudoButton.setOnAction( e -> {
-            String localizar = localizarField.getText();
-
-            if(!localizar.equals(localizarString)){
-                localizarIndice = 0;
-            }
-
-            localizarString = localizar;
-
-            String substituir = substituirField.getText();
-
-            if (localizar.isEmpty() || substituir.isEmpty()) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Erro no processamento");
-                alert.setHeaderText("Campo Vazio!");
-                alert.setContentText("Todos os campos devem ser preenchidos para realizar o processamento!");
-                alert.initOwner(gridPane.getScene().getWindow());
-                alert.show();
-            } else {
-                int contador = 0;
-                int index;
-                if(checkBox.isSelected()){
-                    while ((index = textArea.getText().indexOf(localizar, localizarIndice)) >= 0){
-                        textArea.replaceText(index,index + localizar.length(),substituir);
-                        localizarIndice = index + substituir.length() + 1;
-                        contador++;
-                    }
-
-                } else{
-                    while ((index = textArea.getText().toLowerCase().indexOf(localizar.toLowerCase(), localizarIndice)) >= 0){
-                        textArea.replaceText(index,index + localizar.length(),substituir);
-
-                        localizarIndice = index + substituir.length() + 1;
-                        contador++;
-                    }
-
-                }
-
-                 if (contador == 0) {
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Erro no processamento");
-                    alert.setHeaderText("Texto não encontrado!");
-                    alert.setContentText("Não foi possível encontrar '" + localizar + "'");
-                    alert.initOwner(gridPane.getScene().getWindow());
-                    alert.show();
-                    localizarIndice = 0;
-                }
-            }
-
-        });
-
-
-        Button cancelarButton = (Button) vBox2.getChildren().get(3);
-
-        cancelarButton.setOnAction(e -> {
-            Stage stage = (Stage) gridPane.getScene().getWindow();
-            stage.close();
-        });
-
 
         Stage stage = new Stage();
         stage.setScene(new Scene(gridPane, 600, 200));
         stage.setTitle("Substituir");
         stage.setResizable(false);
         stage.initOwner(borderPane.getScene().getWindow());
-        stage.getIcons().add(new Image(getClass().getResourceAsStream("/com/raphaelcollin/notepad/arquivos/icone.PNG")));
+        stage.getIcons().add(new Image("file:arquivos/icone.png"));
         stage.show();
 
     }
@@ -745,7 +524,7 @@ public class Controller {
 
     @FXML
     public void handleIrPara() throws Exception {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/raphaelcollin/notepad/view/janela_irpara.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/janela_irpara.fxml"));
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setDialogPane(fxmlLoader.load());
         dialog.setTitle("Ir para");
@@ -753,10 +532,13 @@ public class Controller {
 
         IrParaController controller = fxmlLoader.getController();
 
+        controller.getTextField().setText(String.format("%d",textArea.getText().split("\n").length));
+
         Optional<ButtonType> resultado = dialog.showAndWait();
 
         if(resultado.isPresent() && resultado.get().getButtonData().equals(ButtonBar.ButtonData.YES)){
-            controller.processarResultado(textArea,borderPane);
+            controller.setBorderPane(borderPane);
+            controller.processarResultado(textArea);
         }
     }
 
@@ -807,9 +589,9 @@ public class Controller {
     @FXML
     public void handleFonte() throws Exception{
         Dialog<ButtonType> dialog = new Dialog<>();
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/raphaelcollin/notepad/view/janela_fonte.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/janela_fonte.fxml"));
         dialog.setDialogPane(fxmlLoader.load());
-        dialog.getDialogPane().getStylesheets().add(getClass().getResource("/com/raphaelcollin/notepad/estilo.css").toExternalForm());
+        dialog.getDialogPane().getStylesheets().add(getClass().getResource("/estilo.css").toExternalForm());
         dialog.setTitle("Fonte");
         dialog.initOwner(borderPane.getScene().getWindow());
 
@@ -847,7 +629,7 @@ public class Controller {
     * o navegador padrão do computador em que está sendo executada a aplicação será aberto ná página do link abaixo*/
 
     @FXML
-    public void handleExibirAjuda() throws Exception{
+    public void handleExibirAjuda() throws Exception {
         Desktop.getDesktop().browse(new URL("https://www.bing.com/search?q=obter+ajuda+com+o+bloco+de+notas+no+windows+10&filters=guid:%224466414-pt-ptb-dia%22%20lang:%22pt-br%22&form=T00032&ocid=HelpPane-BingIA").toURI());
     }
 
@@ -900,7 +682,7 @@ public class Controller {
 
         Properties properties = new Properties();
 
-        try (BufferedOutputStream writer = new BufferedOutputStream(new FileOutputStream("config.properties"))) {
+        try (BufferedOutputStream writer = new BufferedOutputStream(new FileOutputStream("arquivos/config.properties"))) {
             if(parentFile != null){
                 properties.setProperty("parentFile",parentFile.toString());
             } else{
@@ -940,7 +722,7 @@ public class Controller {
     public int exibirConfirmacaoSaida(){
         Dialog<ButtonType> dialog = new Dialog<>();
         try {
-            dialog.setDialogPane(FXMLLoader.load(getClass().getResource("/com/raphaelcollin/notepad/view/janela_saida.fxml")));
+            dialog.setDialogPane(FXMLLoader.load(getClass().getResource("/janela_saida.fxml")));
         } catch (IOException e){
             System.out.println("Erro: " + e.getMessage());
         }
@@ -959,7 +741,7 @@ public class Controller {
         return -1;
     }
 
-        // Getters
+        // Getters e Setters
 
 
     public boolean isEstaSalvo() {
@@ -970,5 +752,19 @@ public class Controller {
         return textArea;
     }
 
+    int getLocalizarIndice() {
+        return localizarIndice;
+    }
 
+    String getLocalizarString() {
+        return localizarString;
+    }
+
+    void setLocalizarIndice(int localizarIndice) {
+        this.localizarIndice = localizarIndice;
+    }
+
+    void setLocalizarString(String localizarString) {
+        this.localizarString = localizarString;
+    }
 }
